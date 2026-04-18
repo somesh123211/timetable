@@ -1,18 +1,25 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from routes.auth_routes import auth_bp
+from timetable_core import generate_timetable
 
 app = Flask(__name__)
-CORS(app)
 
-app.register_blueprint(auth_bp, url_prefix="/auth")
+# ✅ FIX CORS PROPERLY
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route("/")
-def home():
-    return {"message": "Backend Running ✅"}
 
-from routes.subject_routes import subject_bp
-app.register_blueprint(subject_bp, url_prefix="/subjects")
+@app.route("/generate", methods=["POST"])
+def generate():
+    data = request.json
+    subjects = data.get("subjects", [])
+    timetable = generate_timetable(subjects)
+    return jsonify({"timetable": timetable})
+
+
+@app.route("/save-timetable", methods=["POST"])
+def save_timetable():
+    return jsonify({"status": "ok"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)

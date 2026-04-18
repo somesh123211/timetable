@@ -1,9 +1,18 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="mysql8001.site4now.net",
-        user="a2df89_aiplac",
-        password="kwcw@576KW",
-        database="db_a2df89_aiplac"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+         pool_name="mypool",
+        pool_size=5
+
+
     )
