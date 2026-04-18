@@ -11,8 +11,15 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.json
+
     subjects = data.get("subjects", [])
-    timetable = generate_timetable(subjects)
+    existing = data.get("existing_timetables", [])   # 🔥 NEW
+
+    print("Subjects:", len(subjects))
+    print("Existing Timetables:", len(existing))     # 🔍 DEBUG
+
+    timetable = generate_timetable(subjects, existing)  # 🔥 UPDATED
+
     return jsonify({"timetable": timetable})
 
 
