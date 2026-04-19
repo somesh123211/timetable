@@ -1,13 +1,18 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* src/index.css */
+:root {
+  /* Forest Corporate Palette */
+  --color-primary: #10b981;
+  --color-primary-hover: #15803d;
+  --color-bg-app: #f9fafb;
+  --color-bg-surface: #ffffff;
+  --color-text-main: #1f2937;
+  --color-text-header: #111827;
+  --color-border: #e5e7eb;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif; /* Add Inter font in index.html */
+  background-color: var(--color-bg-app);
+  color: var(--color-text-main);
 }

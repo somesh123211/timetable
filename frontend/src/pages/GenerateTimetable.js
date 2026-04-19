@@ -2,6 +2,7 @@ import { useState } from "react";
 import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 function GenerateTimetable() {
 
@@ -194,32 +195,50 @@ const res = await fetch("http://127.0.0.1:5000/generate", {
   // =========================
   // FINALIZE
   // =========================
-  const handleFinalize = async () => {
+  
 
-    if (!timetable) return alert("No timetable");
+const handleFinalize = async () => {
 
-    const updatedTT = updateSlots(JSON.parse(JSON.stringify(timetable)));
-    const safeTT = convertTTToObject(updatedTT);
+  if (!timetable) return alert("No timetable");
 
-    console.log("Saving:", safeTT);
+  const updatedTT = updateSlots(JSON.parse(JSON.stringify(timetable)));
+  const safeTT = convertTTToObject(updatedTT);
 
-    try {
+  const department = user?.department || "unknown";
+  const className = year;
 
-      await addDoc(collection(db, "timetables"), {
-        className: year,
-        department: user?.department || "unknown",
-        createdBy: user?.id || "guest",
-        timetable: safeTT,
-        createdAt: serverTimestamp()
-      });
+  // 🔥 UNIQUE DOC ID
+  const docId = `${department}_${className}`;
 
-      alert("✅ Saved to Firebase");
+  const docRef = doc(db, "timetables", docId);
 
-    } catch (err) {
-      console.error("Firebase Error:", err);
-      alert("❌ Firebase save failed");
+  try {
+
+    // 🔥 CHECK IF ALREADY EXISTS
+    const existing = await getDoc(docRef);
+
+    if (existing.exists()) {
+      alert("❌ Timetable already finalized for this class.\nDelete it first to regenerate.");
+      return;
     }
-  };
+
+    // ✅ SAVE ONLY ONCE
+    await setDoc(docRef, {
+      className,
+      department,
+      createdBy: user?.id || "guest",
+      timetable: safeTT,
+      createdAt: serverTimestamp(),
+      finalized: true
+    });
+
+    alert("✅ Timetable finalized and saved!");
+
+  } catch (err) {
+    console.error("Firebase Error:", err);
+    alert("❌ Firebase save failed");
+  }
+};
 
   return (
     <div style={{ textAlign: "center", marginTop: "30px" }}>
